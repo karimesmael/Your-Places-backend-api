@@ -1,4 +1,4 @@
-const { json } = require("body-parser");
+const mongoose = require("mongoose");
 const HttpError = require("../models/http-error");
 const Place = require("../models/place");
 const User = require("../models/user");
@@ -46,10 +46,23 @@ exports.createPlace = async (req, res) => {
 
 exports.deletePlace = async (req, res, next) => {
   const placeId = req.params.placeId;
-  await Place.findByIdAndDelete(placeId);
-  const user = await User.findById(creator);
-  user.places.pull(placeId);
-  await user.save();
+  const place = await Place.findById(placeId).populate("creator");
+  if (req.userId !== place.creator) {
+    const error = new HttpError("you are not allowed to delete this ", 401);
+    return next(error);
+  }
+  try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await place.remove({ session: session });
+    place.creator.places.pull(place);
+    await place.creator.save({ session: session });
+    await session.commitTransaction();
+  } catch (err) {
+    console.log(err);
+    const error = new HttpError("something went wrong", 500);
+    return next(error);
+  }
   res.json({ message: "place is deleted" });
 };
 
