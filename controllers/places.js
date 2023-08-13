@@ -46,6 +46,7 @@ exports.createPlace = async (req, res) => {
 
 exports.deletePlace = async (req, res, next) => {
   const placeId = req.params.placeId;
+
   const place = await Place.findById(placeId).populate("creator");
   if (req.userId !== place.creator) {
     const error = new HttpError("you are not allowed to delete this ", 401);
