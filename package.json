@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
-  },
+    },
   "author": "Karim Esmael",
   "license": "ISC",
   "dependencies": {
@@ -15,7 +15,8 @@
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.1",
-    "mongoose": "^7.4.2"
+    "mongoose": "^7.4.2",
+    "redis": "^4.6.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
